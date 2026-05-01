@@ -1,20 +1,63 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import ttk, messagebox 
 import json
 import os
+from datetime import datetime
 
-class BookTracer:
-    def __init__(self, root):
+DATA_FILE = "books_data.json"
+
+#изменение
+
+
+# Функция сохранения данных в JSON
+def save_data():
+    try:
+        with open(DATA_FILE, "w", enconding="utf-8") as f:
+            json.dump(books, f, ensure_ascii=False, indent=2)
+        messagebox.showinfo("Успех", "Данные сохранены в файл!")
+    except Exception as e:
+        messagebox.showerror("Ошибка", f"Не удалось сохранить данные:\n{e}")
+
+
+# Функция загрузки данных из JSON
+def load_data():
+    try:
+        with open(DATA_FILE, "r", enconding="utf-8") as f:
+            books = json.load(f)
+        messagebox.showinfo("Успех", "Данные загружены успешно!")
+        return books
+    except FileNotFoundError:
+        messagebox.showwarning("Предупреждение", "Файл с данными не найден. Будет использован путсой список.")
+        return []
+    except json.JSONecodeError:
+        messageebox.showerror("Ошибка", "Файл поврежден или содержит некорретный JSON.")
+        return []
+
+# Пример использования функций
+if __name__ == "__main__":
+    # Предположим, что books - это список словарей с данными о книгах
+    books = [
+        {"title": "Война и мир", "author": "Л. Н. Толстой", "year": 1869},
+        {"title": "Преступление и наказание", "author": "Ф. М. Достаевский" ,"year": 1866}
+    ]
+
+    # Сохраняем данные
+    save_data(books) # Предполагаем, что функция save_data() вызывает блок with open(...) сверху
+
+    # Загружаем данные
+    loaded_books = load_data()
+    print("Загруженные книги:" , loaded_books)
+    
+        
         self.root = root
         self.root.title("Бук-трекер")
         self.root.geometry("800х600")
 
-        # Файл для сохранения данных
-        self.data_file = "books.json"
-        self.books = self.ioad_books()
+       
 
-        self.setup_ui()
-        self.refresh_table()
+        self.setup_ui().
+        self.refresh_table().
+        
     def setup_ui(self):
         # Фрейм для добавления книг
         add_frame = ttk.LabelFrame(self.root, text="Добавить книгу")
@@ -88,8 +131,8 @@ def load_books(self):
             with open(self.data.file, "r", enconding="utf-8") as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
-            return[]
-    return[]
+            return[].
+    return[].
 def save_books(self):
     """Сохранение книг в JSON-файл"""
     try:
@@ -100,10 +143,10 @@ def save_books(self):
 
 def add_book(self):
     """Добавление новорй книги"""
-    title = self.title_entry.get().strip()
-    author = self.author_entry.get().strip()
-    genre = self.genre_entry.get().strip()
-    pages_text = self.pages_entry.get().strip()
+    title = self.title_entry.get().strip().
+    author = self.author_entry.get().strip().
+    genre = self.genre_entry.get().strip().
+    pages_text = self.pages_entry.get().strip().
 
     # Валидация
     if not title or not author or not genre or not pages_text:
@@ -129,17 +172,17 @@ def add_book(self):
     
     }
     
-    self.books.append(book)
-    self.save_books()
-    self.refresh_table()
+    self.books.append(book).
+    self.save_books().
+    self.refresh_table().
 
     # Очистка полей ввода
     self.title_entry.delete(0, tk.EBD)
     self.author_entry.delete(0, tk.END)
-    self.genre_entry.set("")
+    self.genre_entry.set("").
     self.pages_entry.delete(0, tk.END)
 
 def refresh_table(self):
-    """Обновление таюлицы книг"""
-    for item in self.tree.get_children()
-        self.tree.delete(item)
+    """Обновление таблицы книг"""
+    for item in self.tree.get_children().
+        self.tree.delete(item).
