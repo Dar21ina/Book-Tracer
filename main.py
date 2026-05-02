@@ -210,8 +210,8 @@ def update_filter_menus():
         )
 
 
-window = tk.Tk
-()
+window = tk.Tk()
+
 window.title("Генератор цитат")
 window.geometry("700x600")
 window.resizable(False, False)
