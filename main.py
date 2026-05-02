@@ -1,188 +1,324 @@
-import tkinter as tk
-from tkinter import ttk, messagebox 
+
 import json
-import os
-from datetime import datetime
-
-DATA_FILE = "books_data.json"
-
-#изменение
+import random
+import tkinter as tk
+from tkinter import messagebox
 
 
-# Функция сохранения данных в JSON
-def save_data():
-    try:
-        with open(DATA_FILE, "w", enconding="utf-8") as f:
-            json.dump(books, f, ensure_ascii=False, indent=2)
-        messagebox.showinfo("Успех", "Данные сохранены в файл!")
-    except Exception as e:
-        messagebox.showerror("Ошибка", f"Не удалось сохранить данные:\n{e}")
+QUOTES_FILE = "quotes.json"
+HISTORY_FILE = "history.json"
 
 
-# Функция загрузки данных из JSON
+default_quotes = [
+    {
+        "text": "Ученье — свет, а неученье — тьма.",
+        "author": "Народная мудрость",
+        "theme": "Образование"
+    },
+    {
+        "text": "Знание — сила.",
+        "author": "Фрэнсис Бэкон",
+        "theme": "Знания"
+    },
+    {
+        "text": "Дорогу осилит идущий.",
+        "author": "Народная мудрость",
+        "theme": "Мотивация"
+    },
+    {
+        "text": "Великие дела начинаются с маленьких шагов.",
+        "author": "Неизвестный автор",
+        "theme": "Мотивация"
+    },
+    {
+        "text": "Время — самый ценный ресурс.",
+        "author": "Бенджамин Франклин",
+        "theme": "Время"
+    }
+]
+
+
+quotes = []
+history = []
+
+
 def load_data():
-    try:
-        with open(DATA_FILE, "r", enconding="utf-8") as f:
-            books = json.load(f)
-        messagebox.showinfo("Успех", "Данные загружены успешно!")
-        return books
-    except FileNotFoundError:
-        messagebox.showwarning("Предупреждение", "Файл с данными не найден. Будет использован путсой список.")
-        return []
-    except json.JSONecodeError:
-        messageebox.showerror("Ошибка", "Файл поврежден или содержит некорретный JSON.")
-        return []
+    """Загружает цитаты и историю из JSON-файлов."""
+    global quotes, history
 
-# Пример использования функций
-if __name__ == "__main__":
-    # Предположим, что books - это список словарей с данными о книгах
-    books = [
-        {"title": "Война и мир", "author": "Л. Н. Толстой", "year": 1869},
-        {"title": "Преступление и наказание", "author": "Ф. М. Достаевский" ,"year": 1866}
-    ]
+    try:
+        with open(QUOTES_FILE, "r", encoding="utf-8") as file:
+            quotes = json.load(file)
+    except FileNotFoundError:
+        quotes = default_quotes.copy()
+        save_quotes()
+    except json.JSONDecodeError:
+        quotes = default_quotes.copy()
+        save_quotes()
 
-    # Сохраняем данные
-    save_data(books) # Предполагаем, что функция save_data() вызывает блок with open(...) сверху
-
-    # Загружаем данные
-    loaded_books = load_data()
-    print("Загруженные книги:" , loaded_books)
-    
-        
-        self.root = root
-        self.root.title("Бук-трекер")
-        self.root.geometry("800х600")
-
-       
-
-        self.setup_ui().
-        self.refresh_table().
-        
-    def setup_ui(self):
-        # Фрейм для добавления книг
-        add_frame = ttk.LabelFrame(self.root, text="Добавить книгу")
-        add_frame.pack(fill="х", padx=10, pade=5)
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as file:
+            history = json.load(file)
+    except FileNotFoundError:
+        history = []
+        save_history()
+    except json.JSONDecodeError:
+        history = []
+        save_history()
 
 
-        ttk.Label(add_frame, text="Название:").grid(row=0, column=0, pady=5, sticky="w")
-        self.title_entry = ttk.Entry(add_frame, width=25)
-        selftitle_entry.grid(row=0, padx=5, pady=5)
+def save_quotes():
+    """Сохраняет список цитат в файл quotes.json."""
+    with open(QUOTES_FILE, "w", encoding="utf-8") as file:
+        json.dump(quotes, file, ensure_ascii=False, indent=4)
 
 
-        ttk.Label(add_frame, text="Автор:").grid(row=0, column=2, padx=5, pady=5, sticky='w')
-        self.author_entry = ttk.Entry(add_frame, width=25)
-        self.title_entry.grid(row=0, column=3, padx=5, pady=5)
-        
-
-        ttk.Label(add_frame, text="Жанр:").grid(row=1, column=0, pady=5, sticky="w")
-        self.genre_entry = ttk.Combobox(add_frame, vaiues= [ "Фантастика", "Детектив", "Роман", "Поэзия", "Научная литература", "Биография", "Другое"], width=22)
-
-        ttk.Label(add_frame, text="Страниц:").grid(row=1, column=2, padx=5, pady=5, sticky="w")
-        self.pages_entry = ttk.Entry(add_frame, width=25)
-        self.pages_entry.grid(row=1, column=3, padx=5, pady=5)
-
-        ttk.Button(add_frame, text="Добавить книгу", command=self.add_book).grid(row=0, column=4, rowspan=2, padx=10, pady=5)
+def save_history():
+    """Сохраняет историю цитат в файл history.json."""
+    with open(HISTORY_FILE, "w", encoding="utf-8") as file:
+        json.dump(history, file, ensure_ascii=False, indent=4)
 
 
-        # Фрейм для фильтрации
-        fiter_frame = ttk.LabelFrame(self.root, text="Фильтрация")
-        fiter_framе.pack(fill="х", padx=10, pady=5)
-        ttk.Label(add_frame, text="Жанр:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.filter_genre = ttk.Combobox(filter_frame, vaiues=["Все"] + ["Фантастика", "Детектив", "Роман", "Поэзия", "Научная литература", "Биография", "Другое"])
-        self.filter_genre.set("Все")
-        self.filter_genre.grid(row=0, column=1, padx=5, pady=5)
+def generate_quote():
+    """Выбирает случайную цитату и добавляет её в историю."""
 
-        ttk.Label(filter_frame, text="Страниц:").grid(row=0, column=3, padx=5, pady=5, sticky="w")
-        self.filter_pages = ttk.Combobox(fiter_frame, values=["Все", ">200", ">300",">400",">200"])
-        self.filter_pages.set("Все")
-        self.filter_gages.grid(row=0, column=3, padx=5, pady=5)
-        ttk.Button(fiter_framе, text="Применить фильтры", command=self.apply_filters).grid(row=0, column=4, padx=10, pady=5)
-        ttk.Button(fiter_framе, text="Сбросить фильтры", command=self.reset_filters).grid(row=0, column=5, padx=10, pady=5)
+    if not quotes:
+        messagebox.showwarning("Ошибка", "Список цитат пуст.")
+        return
+
+    quote = random.choice(quotes)
+
+    quote_text = quote["text"]
+    quote_author = quote["author"]
+    quote_theme = quote["theme"]
+
+    result_label.config(
+        text=f"«{quote_text}»\nАвтор: {quote_author}\nТема: {quote_theme}"
+    )
+
+    history.append(quote)
+    save_history()
+    update_history_listbox(history)
 
 
-        # Таблица для отображения книг
-        table_frame = ttk.Frame(self.root)
-        table_frame.pack(fill="booth", expand=True, padx=10, pady=5)
+def update_history_listbox(items):
+    """Обновляет список истории цитат."""
 
-        columns = ("ID", "Название", "Автор", "Жанр", "Страниц")
-        self.tree = ttk.Treevien(table_frame, colums=colums, show ="headings", heigth=15)
-        
-        for col in columns:
-            self.tree.heading(col, text=col)
-            self.tree.column(col, width=120)
+    history_listbox.delete(0, tk.END)
 
-        scorollbar = ttk.Scorollbar(table_fraem, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
+    for quote in items:
+        history_listbox.insert(
+            tk.END,
+            f"{quote['author']} | {quote['theme']} | {quote['text']}"
+        )
 
-        self.tree.pack(side="left", fill="both", expand=True)
-        scorollbar.pack(side="right", fiil="y")
 
-        # Кнопки управления
-        button_frame = ttk.Frame(self.root)
-        button_frame.pack(fiil="x", padx=10, pady=5)
-        
-        ttk.Button(button_frame, text="Удалить выбранную", command=self.delete_selected).pack(side="left", padx=5)
-        ttk.Button(button_frame, text="Очистить все", command=self.clear_all).pack(side="left", padx=5)
+def add_quote():
+    """Добавляет новую цитату с проверкой пустых строк."""
 
-def load_books(self):
-    """Загрузка книг из JSON-файла"""
-    if os.path.exists(self.data_file):
-        try:
-            with open(self.data.file, "r", enconding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, IOError):
-            return[].
-    return[].
-def save_books(self):
-    """Сохранение книг в JSON-файл"""
-    try:
-       with open(self.data_file, "w", enconding="utf-8") as f:
-           json.dump(self.books, f, ensure_ascii=False, indent=4)
-    except IOError as e:
-        messagebox.showerror("Ошибка", f"Не удалось сохранить данные: {e}")
+    text = quote_entry.get().strip()
+    author = author_entry.get().strip()
+    theme = theme_entry.get().strip()
 
-def add_book(self):
-    """Добавление новорй книги"""
-    title = self.title_entry.get().strip().
-    author = self.author_entry.get().strip().
-    genre = self.genre_entry.get().strip().
-    pages_text = self.pages_entry.get().strip().
+    if text == "" or author == "" or theme == "":
+        messagebox.showwarning(
+            "Ошибка",
+            "Заполните текст цитаты, автора и тему."
+        )
+        return
 
-    # Валидация
-    if not title or not author or not genre or not pages_text:
-        messagebox.showwarning("Предупреждение", "Заполните все поля!")
-        return
-    try:
-        pages = int(pages_text)
-        if pages <= 0:
-            raise ValueError:
-    except ValueError:
-        messagebox.showwarning("Предупреждение", "Количество страниц должно быть положительным чилолсм!")
-        return
+    new_quote = {
+        "text": text,
+        "author": author,
+        "theme": theme
+    }
 
-    # Генерация ID
-    book_id = max([book["id"] fjr book in self.books], default=0) + 1
+    quotes.append(new_quote)
+    save_quotes()
 
-    book = {
-        "id": book_id, 
-        "title": title, 
-        "author": author, 
-        "genre": genre,
-        "pages": pages
-    
-    }
-    
-    self.books.append(book).
-    self.save_books().
-    self.refresh_table().
+    quote_entry.delete(0, tk.END)
+    author_entry.delete(0, tk.END)
+    theme_entry.delete(0, tk.END)
 
-    # Очистка полей ввода
-    self.title_entry.delete(0, tk.EBD)
-    self.author_entry.delete(0, tk.END)
-    self.genre_entry.set("").
-    self.pages_entry.delete(0, tk.END)
+    update_filter_menus()
 
-def refresh_table(self):
-    """Обновление таблицы книг"""
-    for item in self.tree.get_children().
-        self.tree.delete(item).
+    messagebox.showinfo("Успешно", "Новая цитата добавлена.")
+
+
+def filter_history():
+    """Фильтрует историю по автору и теме."""
+
+    selected_author = author_filter.get()
+    selected_theme = theme_filter.get()
+
+    filtered_history = []
+
+    for quote in history:
+        author_matches = (
+            selected_author == "Все авторы"
+            or quote["author"] == selected_author
+        )
+
+        theme_matches = (
+            selected_theme == "Все темы"
+            or quote["theme"] == selected_theme
+        )
+
+        if author_matches and theme_matches:
+            filtered_history.append(quote)
+
+    update_history_listbox(filtered_history)
+
+
+def reset_filter():
+    """ Сбрасывает фильтры истории."""
+
+    author_filter.set("Все авторы")
+    theme_filter.set("Все темы")
+    update_history_listbox(history)
+
+
+def update_filter_menus():
+    """Обновляет выпадающие списки авторов и тем."""
+
+    authors = sorted(set(quote["author"] for quote in quotes))
+    themes = sorted(set(quote["theme"] for quote in quotes))
+
+    author_menu["menu"].delete(0, tk.END)
+    theme_menu["menu"].delete(0, tk.END)
+
+    author_menu["menu"].add_command(
+        label="Все авторы",
+        command=lambda: author_filter.set("Все авторы")
+    )
+
+    for author in authors:
+        author_menu["menu"].add_command(
+            label=author,
+            command=lambda value=author: author_filter.set(value)
+        )
+
+    theme_menu["menu"].add_command(
+        label="Все темы",
+        command=lambda: theme_filter.set("Все темы")
+    )
+
+    for theme in themes:
+        theme_menu["menu"].add_command(
+            label=theme,
+            command=lambda value=theme: theme_filter.set(value)
+        )
+
+
+window = tk.Tk
+()
+window.title("Генератор цитат")
+window.geometry("700x600")
+window.resizable(False, False)
+
+
+title_label = tk.Label(
+    window,
+    text="Генератор цитат",
+    font=("Arial", 18, "bold")
+)
+title_label.pack(pady=10)
+
+
+result_label = tk.Label(
+    window,
+    text="Нажмите кнопку, чтобы сгенерировать цитату",
+    font=("Arial", 12),
+    wraplength=600,
+    justify="center"
+)
+result_label.pack(pady=10)
+
+
+generate_button = tk.Button(
+    window,
+    text="Сгенерировать цитату",
+    font=("Arial", 11),
+    command=generate_quote
+)
+generate_button.pack(pady=5)
+
+
+add_frame = tk.Frame(window)
+add_frame.pack(pady=10)
+
+tk.Label(add_frame, text="Текст цитаты:").grid(row=0, column=0, padx=5, pady=3)
+quote_entry = tk.Entry(add_frame, width=50)
+quote_entry.grid(row=0, column=1, padx=5, pady=3)
+
+tk.Label(add_frame, text="Автор:").grid(row=1, column=0, padx=5, pady=3)
+author_entry = tk.Entry(add_frame, width=50)
+author_entry.grid(row=1, column=1, padx=5, pady=3)
+
+tk.Label(add_frame, text="Тема:").grid(row=2, column=0, padx=5, pady=3)
+theme_entry = tk.Entry(add_frame, width=50)
+theme_entry.grid(row=2, column=1, padx=5, pady=3)
+
+add_button = tk.Button(
+    add_frame,
+    text="Добавить цитату",
+    command=add_quote
+)
+add_button.grid(row=3, column=1, pady=5)
+
+
+filter_frame = tk.Frame(window)
+filter_frame.pack(pady=10)
+
+tk.Label(filter_frame, text="Фильтр по автору:").grid(
+    row=0,
+    column=0,
+    padx=5
+)
+
+author_filter = tk.StringVar(value="Все авторы")
+author_menu = tk.OptionMenu(filter_frame, author_filter, "Все авторы")
+author_menu.grid(row=0, column=1, padx=5)
+
+tk.Label(filter_frame, text="Фильтр по теме:").grid(
+    row=0,
+    column=2,
+    padx=5
+)
+
+theme_filter = tk.StringVar(value="Все темы")
+theme_menu = tk.OptionMenu(filter_frame, theme_filter, "Все темы")
+theme_menu.grid(row=0, column=3, padx=5)
+
+filter_button = tk.Button(
+    filter_frame,
+    text="Применить фильтр",
+    command=filter_history
+)
+filter_button.grid(row=1, column=1, pady=5)
+
+reset_button = tk.Button(
+    filter_frame,
+    text="Сбросить фильтр",
+    command=reset_filter
+)
+reset_button.grid(row=1, column=2, pady=5)
+
+
+history_label = tk.Label(
+    window,
+    text="История сгенерированных цитат:",
+    font=("Arial", 12, "bold")
+)
+history_label.pack(pady=5)
+
+
+history_listbox = tk.Listbox(window, width=90, height=10)
+history_listbox.pack(pady=5)
+
+
+load_data()
+update_filter_menus()
+update_history_listbox(history)
+
+window.mainloop()
